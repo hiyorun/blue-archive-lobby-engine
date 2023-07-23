@@ -5,12 +5,12 @@ This is a tool to view Blue Archive's Memorial Lobbies via web. Feel free to loo
 
 ### ⚠️ The Live2D's/Spine is a property owned by Nexon/YoStar/MX Studios. That's why I didn't provide those ⚠️
 ## How to use
-Put the skel,atlas,and texture map inside the assets/{character-name}/{character-name.atlas,skel,png} folder. E.g.
+Put the skel,atlas,and texture map inside the models/{character-name}/{character-name.atlas,skel,png} folder. E.g.
 
 ```
-assets/kazusa_my_beloved/kazusa_my_beloved.atlas
-assets/kazusa_my_beloved/kazusa_my_beloved.skel
-assets/kazusa_my_beloved/kazusa_my_beloved.png
+models/kazusa_my_beloved/kazusa_my_beloved.atlas
+models/kazusa_my_beloved/kazusa_my_beloved.skel
+models/kazusa_my_beloved/kazusa_my_beloved.png
 ```
 
 Maybe I'll add "Import from file" feature in the future.
