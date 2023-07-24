@@ -1,6 +1,9 @@
 #!/bin/bash
 
-paths=$(find models/ -name "*.skel")
+SOURCE=${1:-'models/'}
+DESTINATION=${2:-'src/assets/models.json'}
+
+paths=$(find $(pwd)/$SOURCE -name "*.skel")
 items=()
 for path in $paths; do
 	filename=$(/usr/bin/basename "${path%.skel}")
@@ -8,4 +11,4 @@ for path in $paths; do
 	items+=("{\"name\":\"${name^}\",\"path\":\"$path\"}")
 done
 itemsToJson=$(IFS=,;echo "${items[*]}")
-echo "{\"assets\":[$itemsToJson]}" | jq > src/assets/models.json
+echo "{\"assets\":[$itemsToJson]}" | jq > $DESTINATION
