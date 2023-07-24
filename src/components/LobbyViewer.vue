@@ -42,7 +42,7 @@ function reCanvas() {
 }
 
 // Load spine model and handle loaded event
-function loadModel(model = '/models/aris_home/Aris_home.skel') {
+function loadModel(model = 'models/aris_home/Aris_home.skel') {
     isCharacterLoaded.value = false;
     // remove previous spine model
     if (render.stage.children.length > 0) {
