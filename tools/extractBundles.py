@@ -1,63 +1,51 @@
 import os
 import sys
 import UnityPy
+import concurrent.futures
 
 def extractTextAsset(obj, dest):
     data = obj.read()
-    with open( dest + "/" + data.name, "wb") as f:
+    with open(os.path.join(dest, data.name), "wb") as f:
         f.write(bytes(data.script))
-    # edit asset
-    # fp = os.path.join(replace_dir, data.name)
-    # with open(fp, "rb") as f:
-    #     data.script = f.read()
     data.save()
 
-def extractTexture2D(obj,dest):
+def extractTexture2D(obj, dest):
     data = obj.read()
-
-    # create destination path
-
-    # make sure that the extension is correct
-    # you probably only want to do so with images/textures
-    exportfile = dest + "/" + data.name
-    exportfile, ext = os.path.splitext(exportfile)
-    exportfile = exportfile + ".png"
-
+    exportfile = os.path.join(dest, os.path.splitext(data.name)[0] + ".png")
     img = data.image
     img.save(exportfile)
 
-def unpack_all_assets(source_folder : str, destination_folder : str):
-    # iterate over all files in source folder
-    for root, dirs, files in os.walk(source_folder):
-        for file_name in files:
-            # generate file_path
-            file_path = os.path.join(root, file_name)
-            # load that file via UnityPy.load
-            env = UnityPy.load(file_path)
+def process_file(file_path, destination_folder):
+    unity = UnityPy.load(file_path)
+    character_name = file_path.split("-")[3].split(".")[0]
+    print(character_name)
+    dest = os.path.join(destination_folder, character_name)
+    os.makedirs(dest, exist_ok=True)
 
-            character_name = ''.join(file_name.split("spinecharacters-")[1].split("-")[0] if "spinecharacters" in file_name else file_name.split("spinelobbies-")[1].split("-")[0])
+    for obj in unity.objects:
+        if obj.type.name in ["Texture2D", "Sprite"]:
+            data = obj.read()
+            print(data.name)
+            extractTexture2D(obj, dest)
 
-            dest = os.path.join(destination_folder + "/" + character_name)
-            if not os.path.exists(dest):
-                os.makedirs(dest)
+        if obj.type.name == "TextAsset":
+            data = obj.read()
+            print(data.name)
+            if ".atlas" in data.name or ".skel" in data.name:
+                extractTextAsset(obj, dest)
 
-            # iterate over internal objects
-            for obj in env.objects:
-                # process specific object types
-                if obj.type.name in ["Texture2D", "Sprite"]:
-                    # parse the object data
-                    extractTexture2D(obj,dest)
-
-                if obj.type.name == "TextAsset":
-                    data = obj.read()
-                    if ".atlas" in data.name or ".skel" in data.name:
-                        print(data.name)
-                        extractTextAsset(obj, dest)
+def unpack_all_assets_concurrently(source_folder: str, destination_folder: str):
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        for root, dirs, files in os.walk(source_folder):
+            for file_name in files:
+                file_path = os.path.join(root, file_name)
+                executor.submit(process_file, file_path, destination_folder)
 
 def main():
-    if len(sys.argv) <= 2:
-        print("Usage:\n" + sys.argv[0],"/source/folder /destination/folder")
+    if len(sys.argv) != 3:
+        print("Usage:\n" + sys.argv[0], "/source/folder /destination/folder")
         sys.exit()
-    unpack_all_assets(sys.argv[1],sys.argv[2])
+    unpack_all_assets_concurrently(sys.argv[1], sys.argv[2])
 
-main()
+if __name__ == "__main__":
+    main()
