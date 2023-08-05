@@ -11,4 +11,4 @@ for path in $paths; do
 	items+=("{\"name\":\"${name^}\",\"path\":\"$path\"}")
 done
 itemsToJson=$(IFS=,;echo "${items[*]}")
-echo "{\"assets\":[$itemsToJson]}" | jq > $DESTINATION
+echo "[$itemsToJson]" | jq -c 'sort_by(.name)' > $DESTINATION
