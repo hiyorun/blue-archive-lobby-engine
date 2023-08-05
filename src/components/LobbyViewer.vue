@@ -1,53 +1,55 @@
-<!-- MyComponent.vue -->
 <template>
     <div>
         <canvas id="screen"></canvas>
     </div>
 </template>
   
-<script setup>
+<script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
 import * as PIXI from 'pixi.js';
 import { Spine } from 'pixi-spine';
-import { useParams } from '@/stores/parameters.ts';
-import { storeToRefs } from 'pinia';
+import { useSettings } from '@/stores/settings';
+import type { Animations } from '@/stores/settings';
 
-const parameter = useParams();
+const settings = useSettings();
 
-let render = null;
-let spineModel = null;
+let render: PIXI.Application | null = null;
+let spineModel: Spine | null = null;
 const isCharacterLoaded = ref(false);
 
-// Call reCanvas on component mount
-onMounted(reCanvas);
+// Call initCanvas on component mount
+onMounted(initCanvas);
+
 watch(
-    () => parameter.fetchCurrentAnimation,
-    () => applyAnimation()
+    [() => settings.fetchCurrentAnimation,
+    () => settings.fetchLoop,
+    ],
+    () => applyAnimation(settings.fetchCurrentAnimation)
 )
 watch(
-    () => parameter.fetchChanges,
-    () => {
-        applyAnimation()
-    }
+    () => settings.fetchCurrentModel,
+    (v) => loadModel(v.path)
 )
 
+
 // Initialize PIXI application
-function reCanvas() {
+function initCanvas() {
     render = new PIXI.Application({
         width: window.innerWidth,
         height: window.innerHeight,
-        view: document.getElementById('screen'),
+        view: document.getElementById('screen') as HTMLCanvasElement,
     });
-    loadModel()
+    loadModel(settings.fetchCurrentModel.path);
 }
 
 // Load spine model and handle loaded event
-function loadModel(model = 'models/aris_home/Aris_home.skel') {
+function loadModel(model: string) {
+
     isCharacterLoaded.value = false;
     // remove previous spine model
-    if (render.stage.children.length > 0) {
+    if (render && render.stage.children.length > 0) {
         render.stage.children.pop();
-        PIXI.Assets.load.resources = {};
+        PIXI.Assets.reset
     }
 
     // load new spine model
@@ -55,7 +57,7 @@ function loadModel(model = 'models/aris_home/Aris_home.skel') {
 }
 
 // Handle assets loaded event
-function onModelLoad(res) {
+function onModelLoad(res: any) {
     spineModel = new Spine(res.spineData);
 
     // Scale
@@ -67,24 +69,23 @@ function onModelLoad(res) {
     spineModel.y = window.innerHeight / 1;
 
     // Insert animations
-    const animations = res.spineData.animations;
-    parameter.storeAnimations(animations)
+    const animations: Animations[] = res.spineData.animations;
+    settings.storeAnimations(animations);
 
     // Play Animation
-    spineModel.state.setAnimation(0, animations[0].name, parameter.isLoop);
-    parameter.setAnimation(animations[0].name)
+    spineModel.state.setAnimation(0, "Idle_01", settings.fetchLoop);
+    settings.setAnimation("Idle_01");
 
     // Add to main canvas
-    render.stage.addChild(spineModel);
+    if (render) {
+        render.stage.addChild(spineModel);
+    }
     isCharacterLoaded.value = true;
 }
 
-function applyAnimation() {
-    name = parameter.fetchCurrentAnimation
-    console.log(parameter.isLoop)
-    spineModel.state.setAnimation(0, name, parameter.isLoop);
+function applyAnimation(name: string) {
+    if (spineModel) {
+        spineModel.state.setAnimation(0, name, settings.fetchLoop);
+    }
 }
-
-
 </script>
-  

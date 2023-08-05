@@ -9,7 +9,9 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
-    "format": "prettier --write src/"
+    "format": "prettier --write src/",
+    "nix-generate": "tools/json-init_nix.sh",
+    "win-generate": "tools/json-init_win.ps1"
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.14",
