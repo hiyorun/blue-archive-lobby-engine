@@ -1,6 +1,9 @@
 <template>
     <div>
-        <canvas id="screen"></canvas>
+        <div class="rounded-full bg-arisu-200 dark:bg-arisu-900 absolute left-12 m-2 p-2 text-arisu-600 dark:text-arisu-400 cursor-pointer" >
+            <span @click="debuggerButton()" >Debug Spine</span>
+        </div>
+        <canvas @mousedown="deployHeadPats" @mouseup="releaseHeadPat" id="screen"></canvas>
     </div>
 </template>
   
@@ -31,6 +34,9 @@ watch(
     (v) => loadModel(v.path)
 )
 
+function debuggerButton(){
+    console.log(spineModel)
+}
 
 // Initialize PIXI application
 function initCanvas() {
@@ -74,6 +80,9 @@ function onModelLoad(res: any) {
 
     // Play Animation
     spineModel.state.setAnimation(0, "Idle_01", settings.fetchLoop);
+    spineModel.state.setAnimation(1, "Dummy", settings.fetchLoop);
+    spineModel.state.setAnimation(2, "Dummy", settings.fetchLoop);
+
     settings.setAnimation("Idle_01");
 
     // Add to main canvas
@@ -81,6 +90,26 @@ function onModelLoad(res: any) {
         render.stage.addChild(spineModel);
     }
     isCharacterLoaded.value = true;
+}
+
+function deployHeadPats(){
+    if(!spineModel){
+        return
+    }
+    spineModel.stateData.setMix("Dummy","Pat_01_M",0.1)
+    spineModel.stateData.setMix("Dummy","Pat_01_A",0.1)
+    spineModel.state.setAnimation(1,"Pat_01_A",false)
+    spineModel.state.setAnimation(2,"Pat_01_M",false)
+}
+
+function releaseHeadPat(){
+    if(!spineModel){
+        return
+    }
+    spineModel.stateData.setMix("Pat_01_M","Dummy",0.1)
+    spineModel.stateData.setMix("Pat_01_A","Dummy",0.1)
+    spineModel.state.setAnimation(1, "Dummy", settings.fetchLoop);
+    spineModel.state.setAnimation(2, "Dummy", settings.fetchLoop);
 }
 
 function applyAnimation(name: string) {
