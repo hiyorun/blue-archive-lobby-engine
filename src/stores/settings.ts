@@ -37,8 +37,8 @@ export const useSettings = defineStore({
             path: ""
         }],
         currentModel: {
-            "name": "Aru",
-            "path": "models/aru_home/Aru_home.skel"
+            "name": "Kazusa",
+            "path": "models/kazusa_home/kazusa_home.skel"
         },
         animations: [],
         currentAnimation: "",
