@@ -89,8 +89,8 @@ function onModelLoad(res: any): void {
 
     // Play Animation
     spineModel.state.setAnimation(0, "Idle_01", settings.fetchLoop);
-    spineModel.state.setAnimation(1, "Dummy", settings.fetchLoop);
-    spineModel.state.setAnimation(2, "Dummy", settings.fetchLoop);
+    spineModel.state.setAnimation(1, "Dummy", true);
+    spineModel.state.setAnimation(2, "Dummy", true);
 
     settings.setAnimation("Idle_01");
 
