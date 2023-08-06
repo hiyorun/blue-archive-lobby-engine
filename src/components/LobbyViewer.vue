@@ -161,10 +161,10 @@ function deployHeadPats(event: MouseEvent): void {
     }
     console.log("Deploying headpats")
 
-    spineModel.stateData.setMix("Dummy", "Pat_01_M", 0.1)
-    spineModel.stateData.setMix("Dummy", "Pat_01_A", 0.1)
-    spineModel.state.setAnimation(1, "Pat_01_A", false)
-    spineModel.state.setAnimation(2, "Pat_01_M", false)
+    spineModel.stateData.setMix("Dummy", "Pat_01_M", 0.2)
+    spineModel.stateData.setMix("Dummy", "Pat_01_A", 0.2)
+    spineModel.state.setAnimation(1, "Pat_01_A", true)
+    spineModel.state.setAnimation(2, "Pat_01_M", true)
 }
 
 function releaseHeadPat(): void {
@@ -174,8 +174,8 @@ function releaseHeadPat(): void {
     }
     console.log("Headpat released")
 
-    spineModel.stateData.setMix("Pat_01_M", "Dummy", 0.1)
-    spineModel.stateData.setMix("Pat_01_A", "Dummy", 0.1)
+    spineModel.stateData.setMix("Pat_01_M", "Dummy", 0.2)
+    spineModel.stateData.setMix("Pat_01_A", "Dummy", 0.2)
     spineModel.state.setAnimation(1, "Dummy", settings.fetchLoop);
     spineModel.state.setAnimation(2, "Dummy", settings.fetchLoop);
     //@ts-ignore
